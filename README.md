@@ -1,38 +1,65 @@
-# DIO - Trilha .NET - Fundamentos
-www.dio.me
+# Gerenciador de Estacionamento - Console App (.NET)
 
-## Desafio de projeto
-Para este desafio, você precisará usar seus conhecimentos adquiridos no módulo de fundamentos, da trilha .NET da DIO.
+Aplicativo de console desenvolvido em .NET para gerenciamento de um estacionamento. Permite registrar entrada e saída de veículos, calcular o tempo de permanência e o valor final a ser cobrado.
+Desenvolvido para o desafio da DIO - Trilha .NET - Fundamentos
 
-## Contexto
-Você foi contratado para construir um sistema para um estacionamento, que será usado para gerenciar os veículos estacionados e realizar suas operações, como por exemplo adicionar um veículo, remover um veículo (e exibir o valor cobrado durante o período) e listar os veículos.
+## 🛠 Funcionalidades
 
-## Proposta
-Você precisará construir uma classe chamada "Estacionamento", conforme o diagrama abaixo:
-![Diagrama de classe estacionamento](diagrama_classe_estacionamento.png)
+- Registro de entrada e saída de veículos  
+- Cálculo automático de tempo estacionado e valor total 
+- Persistência de dados com **AWS DynamoDB**  
+- Arquitetura baseada em **Injeção de Dependência (DI)**  
+- Integração com **AWS CLI** para configuração do ambiente
 
-A classe contém três variáveis, sendo:
+## 💻 Tecnologias Utilizadas
 
-**precoInicial**: Tipo decimal. É o preço cobrado para deixar seu veículo estacionado.
+- .NET 6 ou superior
+- C#
+- AWS DynamoDB
+- AWS CLI
+- Programação Orientada a Objetos (POO)
+- Injeção de Dependência (Microsoft.Extensions.DependencyInjection)
 
-**precoPorHora**: Tipo decimal. É o preço por hora que o veículo permanecer estacionado.
+## ⚙️ Pré-requisitos
 
-**veiculos**: É uma lista de string, representando uma coleção de veículos estacionados. Contém apenas a placa do veículo.
+- [.NET SDK](https://dotnet.microsoft.com/)
+- Conta AWS com permissões para uso do DynamoDB
+- [AWS CLI instalado e configurado](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 
-A classe contém três métodos, sendo:
+## 🚀 Como executar
 
-**AdicionarVeiculo**: Método responsável por receber uma placa digitada pelo usuário e guardar na variável **veiculos**.
+1. Clone o repositório:
+  ```bash
+  git clone https://github.com/pedrohrocodes/estacionamento-console-app.git
+  cd trilha-net-fundamentos-desafio/DesafioFundamentos
+  ```
 
-**RemoverVeiculo**: Método responsável por verificar se um determinado veículo está estacionado, e caso positivo, irá pedir a quantidade de horas que ele permaneceu no estacionamento. Após isso, realiza o seguinte cálculo: **precoInicial** * **precoPorHora**, exibindo para o usuário.
+2. Configure suas credenciais AWS via CLI:
+  ```bash
+  aws configure
+  ```
 
-**ListarVeiculos**: Lista todos os veículos presentes atualmente no estacionamento. Caso não haja nenhum, exibir a mensagem "Não há veículos estacionados".
+3. Restaure e execute o projeto:
+  ```bash
+  dotnet restore
+  dotnet run
+  ```
 
-Por último, deverá ser feito um menu interativo com as seguintes ações implementadas:
-1. Cadastrar veículo
-2. Remover veículo
-3. Listar veículos
-4. Encerrar
+## 📁 Estrutura do Projeto
+   ```pgsql
+    /DesafioFundamentos
+    │
+    ├── Models/
+    ├── Services/
+    ├── Repositories/
+    ├── Program.cs
+   ```
 
+## 📌 Observações
 
-## Solução
-O código está pela metade, e você deverá dar continuidade obedecendo as regras descritas acima, para que no final, tenhamos um programa funcional. Procure pela palavra comentada "TODO" no código, em seguida, implemente conforme as regras acima.
+- A tabela no DynamoDB será criada automaticamente se não existir (configurável).
+- O cálculo do valor pode ser facilmente adaptado para diferentes regras (por hora, fração, diária etc).
+
+## 📄 Licença
+Este projeto está sob a licença MIT.
+
