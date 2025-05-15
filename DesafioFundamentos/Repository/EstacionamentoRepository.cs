@@ -8,26 +8,26 @@ using DesafioFundamentos.Repository.Interface;
 
 namespace DesafioFundamentos.Repository;
 
-public class VeiculoRepository : IVeiculoRepository
+public class EstacionamentoRepository : IEstacionamentoRepository
 {
     private readonly IAmazonDynamoDB _dynamoDB;
-    private readonly string _tableName = "cars"; //Table name we created in Dynamo DB
+    private readonly string _tableName = "car_parking"; // Table name created in Dynamo DB
 
-    public VeiculoRepository(IAmazonDynamoDB dynamoDB)
+    public EstacionamentoRepository(IAmazonDynamoDB dynamoDB)
     {
         _dynamoDB = dynamoDB;
     }
 
-    public async Task<bool> CreateAsync(Veiculo veiculo)
+    public async Task<bool> CreateAsync(Estacionamento estacionamento)
     {
-        veiculo.UpdatedAt = DateTime.UtcNow;
-        var veiculoAsJson = JsonSerializer.Serialize(veiculo);
-        var veiculoAsAttributes = Document.FromJson(veiculoAsJson).ToAttributeMap();
+        estacionamento.UpdatedAt = DateTime.UtcNow;
+        var estacionamentoAsJson = JsonSerializer.Serialize(estacionamento);
+        var estacionamentoAsAttributes = Document.FromJson(estacionamentoAsJson).ToAttributeMap();
 
         var createItemRequest = new PutItemRequest
         {
             TableName = _tableName,
-            Item = veiculoAsAttributes
+            Item = estacionamentoAsAttributes
         };
 
         var response = await _dynamoDB.PutItemAsync(createItemRequest);
@@ -35,31 +35,31 @@ public class VeiculoRepository : IVeiculoRepository
         return response.HttpStatusCode == HttpStatusCode.OK;
     }
 
-    public async Task<Veiculo?> GetAsync(Guid id)
+    public async Task<Estacionamento> GetByPlacaAsync(string placa)
     {
         var getItemRequest = new GetItemRequest
         {
             TableName = _tableName,
             Key = new Dictionary<string, AttributeValue>
             {
-                { "pk", new AttributeValue { S = id.ToString() } },
-                { "sk", new AttributeValue { S = id.ToString() } }
+                { "pk", new AttributeValue { S = placa } },
+                { "sk", new AttributeValue { S = placa } }
             }
         };
 
         var response = await _dynamoDB.GetItemAsync(getItemRequest);
 
-        if (response.Item.Count == 0)
+        if (response.Item is null || response.Item.Count == 0)
         {
             return null;
         }
 
         var itemAsDocument = Document.FromAttributeMap(response.Item);
 
-        return JsonSerializer.Deserialize<Veiculo>(itemAsDocument.ToJson());
+        return JsonSerializer.Deserialize<Estacionamento>(itemAsDocument.ToJson());
     }
 
-    public async Task<IEnumerable<Veiculo>> GetAllAsync()
+    public async Task<IEnumerable<Estacionamento>> GetAllAsync()
     {
         var scanRequest = new ScanRequest
         {
@@ -67,24 +67,24 @@ public class VeiculoRepository : IVeiculoRepository
         };
 
         var response = await _dynamoDB.ScanAsync(scanRequest);
-
+        
         return response.Items.Select(x =>
         {
             var json = Document.FromAttributeMap(x).ToJson();
-            return JsonSerializer.Deserialize<Veiculo>(json);
+            return JsonSerializer.Deserialize<Estacionamento>(json);
         });
     }
 
-    public async Task<bool> UpdateAsync(Veiculo veiculo)
+    public async Task<bool> UpdateAsync(Estacionamento estacionamento)
     {
-        veiculo.UpdatedAt = DateTime.UtcNow;
-        var veiculoAsJson = JsonSerializer.Serialize(veiculo);
-        var veiculoAsAttributes = Document.FromJson(veiculoAsJson).ToAttributeMap();
+        estacionamento.UpdatedAt = DateTime.UtcNow;
+        var estacionamentoAsJson = JsonSerializer.Serialize(estacionamento);
+        var estacionamentoAsAttributes = Document.FromJson(estacionamentoAsJson).ToAttributeMap();
 
         var updateItemRequest = new PutItemRequest
         {
             TableName = _tableName,
-            Item = veiculoAsAttributes
+            Item = estacionamentoAsAttributes
         };
 
         var response = await _dynamoDB.PutItemAsync(updateItemRequest);
@@ -92,15 +92,15 @@ public class VeiculoRepository : IVeiculoRepository
         return response.HttpStatusCode == HttpStatusCode.OK;
     }
 
-    public async Task<bool> DeleteAsync(Guid id)
+    public async Task<bool> DeleteAsync(string placa)
     {
         var deleteItemRequest = new DeleteItemRequest
         {
             TableName = _tableName,
             Key = new Dictionary<string, AttributeValue>
             {
-                { "pk", new AttributeValue { S = id.ToString() } },
-                { "sk", new AttributeValue { S = id.ToString() } }
+                { "pk", new AttributeValue { S = placa } },
+                { "sk", new AttributeValue { S = placa } }
             }
         };
 
